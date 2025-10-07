@@ -207,15 +207,7 @@ npm test
 ## 🚀 Deployment
 
 ### Production Environment Variables
-```env
-DEBUG=False
-SECRET_KEY=your-production-secret-key
-ALLOWED_HOSTS=yourdomain.com
-DB_NAME=agritech_production
-DB_USER=postgres
-DB_PASSWORD=secure-password
-DB_HOST=your-db-host
-DB_PORT=5432
+
 ```
 
 ### Docker Production
