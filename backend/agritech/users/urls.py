@@ -1,13 +1,10 @@
 from django.urls import path
-from users.views import SellerRegistrationView, BuyerRegistrationView, RegistrationPageView
-
-app_name = 'users'
+from . import views
 
 urlpatterns = [
-    #registration page url to ask the user if they want to sign up as a seller or as a buyer
-    path('registration/', RegistrationPageView.as_view(), name='signup'),
-    #url to handle sign up authentication as a seller
-    path('registration/seller/', SellerRegistrationView.as_view(), name='register_seller'),
-    #url to handle sign up authentication as a buyer
-    path('registration/buyer/', BuyerRegistrationView.as_view(), name='register_buyer'),
+    path('', views.UserListView.as_view(), name='user-list'),
+    path('register/', views.UserRegistrationView.as_view(), name='user-register'),
+    path('login/', views.user_login, name='user-login'),
+    path('profile/', views.current_user_profile, name='current-user-profile'),
+    path('<int:pk>/', views.UserDetailView.as_view(), name='user-detail'),
 ]

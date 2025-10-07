@@ -1,0 +1,150 @@
+<div class="farmer-dashboard" *ngIf="authService.isFarmer()">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <h1>Farmer Dashboard</h1>
+    <p>Welcome back, {{ currentUser?.first_name }}! Manage your products and track your sales.</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">📦</div>
+      <div class="stat-info">
+        <h3>{{ totalProducts }}</h3>
+        <p>Products Listed</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-info">
+        <h3>KSh {{ totalRevenue | number:'1.0-0' }}</h3>
+        <p>Total Revenue</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">📋</div>
+      <div class="stat-info">
+        <h3>{{ activeOrders }}</h3>
+        <p>Active Orders</p>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-info">
+        <h3>4.8</h3>
+        <p>Average Rating</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <button (click)="addNewProduct()" class="btn btn-primary">
+      ➕ Add New Product
+    </button>
+    <button (click)="viewOrders()" class="btn btn-outline">
+      📋 View Orders
+    </button>
+    <button class="btn btn-outline">
+      📊 Analytics
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">
+    <p>Loading your products...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadFarmerData()" class="retry-btn">Retry</button>
+  </div>
+
+  <!-- Products Section -->
+  <div *ngIf="!loading && !error" class="products-section">
+    <div class="section-header">
+      <h2>Your Products</h2>
+      <span class="product-count">{{ myProducts.length }} products</span>
+    </div>
+
+    <div *ngIf="myProducts.length === 0" class="no-products">
+      <div class="empty-state">
+        <div class="empty-icon">📦</div>
+        <h3>No products yet</h3>
+        <p>Start by adding your first product to the marketplace.</p>
+        <button (click)="addNewProduct()" class="btn btn-primary">Add Your First Product</button>
+      </div>
+    </div>
+
+    <div *ngIf="myProducts.length > 0" class="products-table">
+      <div class="table-header">
+        <div class="col-product">Product</div>
+        <div class="col-category">Category</div>
+        <div class="col-price">Price</div>
+        <div class="col-quantity">Available</div>
+        <div class="col-status">Status</div>
+        <div class="col-actions">Actions</div>
+      </div>
+
+      <div class="table-row" *ngFor="let product of myProducts">
+        <div class="col-product">
+          <div class="product-info">
+            <img [src]="product.image || '/assets/placeholder-product.jpg'" 
+                 [alt]="product.name" 
+                 class="product-thumb"
+                 onerror="this.src='/assets/placeholder-product.jpg'">
+            <div class="product-details">
+              <h4>{{ product.name }}</h4>
+              <p>{{ product.description | slice:0:50 }}...</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-category">
+          <span class="category-badge">{{ product.category }}</span>
+        </div>
+        
+        <div class="col-price">
+          <strong>KSh {{ product.price_per_unit }}</strong>
+          <small>per {{ product.unit }}</small>
+        </div>
+        
+        <div class="col-quantity">
+          <span [class.low-stock]="product.quantity_available < 10">
+            {{ product.quantity_available }} {{ product.unit }}
+          </span>
+        </div>
+        
+        <div class="col-status">
+          <span class="status-badge" 
+                [class.active]="product.quantity_available > 0"
+                [class.out-of-stock]="product.quantity_available === 0">
+            {{ product.quantity_available > 0 ? 'Active' : 'Out of Stock' }}
+          </span>
+        </div>
+        
+        <div class="col-actions">
+          <button (click)="editProduct(product)" class="btn-icon" title="Edit">
+            ✏️
+          </button>
+          <button (click)="deleteProduct(product)" class="btn-icon delete" title="Delete">
+            🗑️
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Access Denied for Non-Farmers -->
+<div *ngIf="!authService.isFarmer()" class="access-denied">
+  <div class="access-denied-content">
+    <h2>Access Denied</h2>
+    <p>This dashboard is only available for farmers. Please contact support if you believe this is an error.</p>
+    <button onclick="window.history.back()" class="btn btn-primary">Go Back</button>
+  </div>
+</div>

@@ -1,14 +1,22 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
-from .models import User, Seller, Buyer
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import User
 
-class UserAdmin(UserAdmin):
-    list_display = ['email', 'is_buyer', 'is_seller']
-    list_display_links = ('email', 'is_buyer', 'is_seller')
-    list_filter = ('is_buyer', 'is_seller')
-    search_fields = ('email',)
-    list_per_page = 50
-
-admin.site.register(User, UserAdmin)
-admin.site.register(Seller)
-admin.site.register(Buyer)
+@admin.register(User)
+class UserAdmin(BaseUserAdmin):
+    list_display = ['email', 'username', 'first_name', 'last_name', 'role', 'is_verified', 'created_at']
+    list_filter = ['role', 'is_verified', 'is_active', 'created_at']
+    search_fields = ['email', 'username', 'first_name', 'last_name']
+    ordering = ['-created_at']
+    
+    fieldsets = BaseUserAdmin.fieldsets + (
+        ('Additional Info', {
+            'fields': ('role', 'phone_number', 'is_verified', 'bio')
+        }),
+    )
+    
+    add_fieldsets = BaseUserAdmin.add_fieldsets + (
+        ('Additional Info', {
+            'fields': ('email', 'role', 'phone_number')
+        }),
+    )

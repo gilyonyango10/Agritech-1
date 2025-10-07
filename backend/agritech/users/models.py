@@ -1,36 +1,30 @@
-from django.contrib.auth import login
 from django.contrib.auth.models import AbstractUser
-from django.conf import settings
 from django.db import models
-from datetime import datetime
 
 class User(AbstractUser):
-    #Boolean fields to select the type of user account.
-    is_buyer     = models.BooleanField(default=False)
-    is_seller    = models.BooleanField(default=False)
-    created_at   = models.DateTimeField(default=datetime.now)
-
+    """Extended User model with role-based authentication"""
+    
+    ROLE_CHOICES = [
+        ('farmer', 'Farmer'),
+        ('buyer', 'Buyer'),
+        ('admin', 'Admin'),
+    ]
+    
+    email = models.EmailField(unique=True)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='buyer')
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    is_verified = models.BooleanField(default=False)
+    bio = models.TextField(max_length=500, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+    
     def __str__(self):
-        return self.email
-
-# user model for farmers selling farm produces
-class Seller(models.Model):
-    seller = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
-    phone_number = models.CharField(max_length=200, null=True)
-    location     = models.CharField(max_length=200, null=True)
-    county       = models.CharField(max_length=200, null=True)
-    country      = models.CharField(max_length=200, null=True)
-    description  = models.TextField(null=True, blank=True)
-    created_at   = models.DateTimeField(default=datetime.now)
-
-    def __str__(self):
-        return self.email
-
-#user model for customers buying farm produces
-class Buyer(models.Model):
-    buyer = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
-    created_at   = models.DateTimeField(default=datetime.now)
-
-    def __str__(self):
-        return self.email
+        return f"{self.email} ({self.get_role_display()})"
+    
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}".strip()
 

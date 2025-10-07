@@ -1,34 +1,27 @@
-asgiref==3.2.10
-astroid==2.5.6
-certifi==2020.11.8
-cffi==1.14.3
-chardet==3.0.4
-cryptography==3.2.1
-defusedxml==0.6.0
-Django==3.1.2
-django-allauth==0.43.0
-django-cors-headers==3.5.0
-django-environ==0.4.5
-django-rest-auth==0.9.5
-djangorestframework==3.12.1
-idna==2.10
-isort==5.8.0
-lazy-object-proxy==1.6.0
-mccabe==0.6.1
-oauthlib==3.1.0
-Pillow==8.0.1
-pkg-resources==0.0.0
-psycopg2==2.8.6
-psycopg2-binary==2.8.6
-pycparser==2.20
-PyJWT==1.7.1
-pylint==2.8.2
-python3-openid==3.2.0
-pytz==2020.1
-requests==2.24.0
-requests-oauthlib==1.3.0
-six==1.15.0
-sqlparse==0.4.1
-toml==0.10.2
-urllib3==1.25.11
-wrapt==1.12.1
+# Core Django
+Django==4.2.7
+djangorestframework==3.14.0
+django-cors-headers==4.3.1
+
+# Authentication & JWT
+djangorestframework-simplejwt==5.3.0
+djoser==2.2.0
+
+# Database
+psycopg2-binary==2.9.7
+
+# Image handling
+Pillow==10.0.1
+
+# API Documentation
+drf-yasg==1.21.7
+
+# Environment variables
+python-decouple==3.8
+
+# Utilities
+django-filter==23.3
+django-extensions==3.2.3
+
+# Development
+django-debug-toolbar==4.2.0

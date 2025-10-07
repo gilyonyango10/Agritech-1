@@ -1,0 +1,184 @@
+<div class="add-product-container">
+  <!-- Header -->
+  <div class="page-header">
+    <button (click)="goBack()" class="back-btn">
+      ← Back to Dashboard
+    </button>
+    <h1>Add New Product</h1>
+    <p>List your agricultural products for sale</p>
+  </div>
+
+  <!-- Form -->
+  <div class="form-container">
+    <form (ngSubmit)="onSubmit()" #productForm="ngForm" class="product-form">
+      
+      <!-- Success Message -->
+      <div *ngIf="success" class="alert alert-success">
+        {{ success }}
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="alert alert-error">
+        {{ error }}
+      </div>
+
+      <!-- Basic Information -->
+      <div class="form-section">
+        <h3>Basic Information</h3>
+        
+        <div class="form-group">
+          <label for="name">Product Name *</label>
+          <input 
+            type="text" 
+            id="name" 
+            [(ngModel)]="productData.name" 
+            name="name" 
+            required 
+            placeholder="e.g., Fresh Tomatoes"
+            class="form-control"
+            maxlength="200">
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <textarea 
+            id="description" 
+            [(ngModel)]="productData.description" 
+            name="description" 
+            required 
+            placeholder="Describe your product, farming methods, quality, etc."
+            class="form-control"
+            rows="4"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="category">Category *</label>
+            <select 
+              id="category" 
+              [(ngModel)]="productData.category" 
+              name="category" 
+              required 
+              class="form-control">
+              <option value="">Select Category</option>
+              <option *ngFor="let category of categories" [value]="category.id">
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input 
+                type="checkbox" 
+                [(ngModel)]="productData.is_organic" 
+                name="is_organic"
+                class="checkbox">
+              Organic Product
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing & Quantity -->
+      <div class="form-section">
+        <h3>Pricing & Quantity</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="price">Price per Unit (KSh) *</label>
+            <input 
+              type="number" 
+              id="price" 
+              [(ngModel)]="productData.price" 
+              name="price" 
+              required 
+              min="0.01" 
+              step="0.01"
+              placeholder="0.00"
+              class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="unit">Unit *</label>
+            <select 
+              id="unit" 
+              [(ngModel)]="productData.unit" 
+              name="unit" 
+              required 
+              class="form-control">
+              <option *ngFor="let unit of unitOptions" [value]="unit.value">
+                {{ unit.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="quantity">Available Quantity *</label>
+            <input 
+              type="number" 
+              id="quantity" 
+              [(ngModel)]="productData.quantity_available" 
+              name="quantity" 
+              required 
+              min="1"
+              placeholder="e.g., 100"
+              class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="minimum_order">Minimum Order</label>
+            <input 
+              type="number" 
+              id="minimum_order" 
+              [(ngModel)]="productData.minimum_order" 
+              name="minimum_order" 
+              min="1"
+              placeholder="1"
+              class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <!-- Dates -->
+      <div class="form-section">
+        <h3>Product Dates (Optional)</h3>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="harvest_date">Harvest Date</label>
+            <input 
+              type="date" 
+              id="harvest_date" 
+              [(ngModel)]="productData.harvest_date" 
+              name="harvest_date" 
+              class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="expiry_date">Expiry Date</label>
+            <input 
+              type="date" 
+              id="expiry_date" 
+              [(ngModel)]="productData.expiry_date" 
+              name="expiry_date" 
+              class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" (click)="goBack()" class="btn btn-outline">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="!productForm.valid || loading">
+          <span *ngIf="loading">Creating Product...</span>
+          <span *ngIf="!loading">Create Product</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,51 +1,45 @@
 from rest_framework import serializers
-from rest_auth.registration.serializers import RegisterSerializer
-from rest_framework.authtoken.models import Token
+from .models import User
 
-from .models import Seller, Buyer
-
-# A user serializer for registering a seller
-class SellerCustomRegistrationSerializer(RegisterSerializer):
-    seller = serializers.PrimaryKeyRelatedField(read_only=True,) #by default allow_null = False
-    phone_number = serializers.CharField(required=True)
-    county = serializers.CharField(required=True)
-    country = serializers.CharField(required=True)
-    description = serializers.CharField(required=True)
-
-    def get_cleaned_data(self):
-            data = super(SellerCustomRegistrationSerializer, self).get_cleaned_data()
-            extra_data = {
-                'phone_number' : self.validated_data.get('phone_number', ''),
-                'county' : self.validated_data.get('county', ''),
-                'country ' : self.validated_data.get('country ', ''),
-                'description': self.validated_data.get('description', ''),
-            }
-            data.update(extra_data)
-            return data
-
-    def save(self, request):
-        user = super(SellerCustomRegistrationSerializer, self).save(request)
-        user.is_seller = True
+class UserCreateSerializer(serializers.ModelSerializer):
+    """Custom user creation serializer with role selection"""
+    
+    role = serializers.ChoiceField(choices=User.ROLE_CHOICES, default='buyer')
+    password = serializers.CharField(write_only=True)
+    
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'username', 'first_name', 'last_name', 'role', 'phone_number', 'password')
+    
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User.objects.create_user(**validated_data)
+        user.set_password(password)
         user.save()
-        seller = Seller(seller=user, phone_number=self.cleaned_data.get('phone_number'),
-                county=self.cleaned_data.get('county'),
-                country=self.cleaned_data.get('country'),
-                description=self.cleaned_data.get('description'))
-        seller.save()
         return user
 
-# A user serializer for registering a buyer
-class BuyerCustomRegistrationSerializer(RegisterSerializer):
-    buyer = serializers.PrimaryKeyRelatedField(read_only=True,) #by default allow_null = False
+class UserSerializer(serializers.ModelSerializer):
+    """User serializer for API responses"""
+    
+    full_name = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = User
+        fields = (
+            'id', 'email', 'username', 'first_name', 'last_name', 'full_name',
+            'role', 'phone_number', 'is_verified', 'bio', 'created_at', 'updated_at'
+        )
+        read_only_fields = ('id', 'created_at', 'updated_at', 'is_verified')
 
-    def get_cleaned_data(self):
-            data = super(BuyerCustomRegistrationSerializer, self).get_cleaned_data()
-            return data
-
-    def save(self, request):
-        user = super(BuyerCustomRegistrationSerializer, self).save(request)
-        user.is_buyer = True
-        user.save()
-        buyer = Buyer(buyer=user)
-        buyer.save()
-        return user
+class UserUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating user profile"""
+    
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'phone_number', 'bio')
+    
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance

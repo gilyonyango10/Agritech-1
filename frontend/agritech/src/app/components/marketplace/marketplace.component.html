@@ -1,0 +1,94 @@
+<div class="marketplace-container">
+  <!-- Header Section -->
+  <div class="marketplace-header">
+    <h1>Agricultural Marketplace</h1>
+    <p>Fresh produce directly from Kenyan farmers</p>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="search-filters">
+    <div class="search-bar">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (input)="onSearch()"
+        placeholder="Search for products..."
+        class="search-input">
+      <button class="search-btn">🔍</button>
+    </div>
+    
+    <div class="filters">
+      <select [(ngModel)]="selectedCategory" (change)="onCategoryChange()" class="category-filter">
+        <option value="">All Categories</option>
+        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">
+    <p>Loading products...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadProducts()" class="retry-btn">Retry</button>
+  </div>
+
+  <!-- Products Grid -->
+  <div *ngIf="!loading && !error" class="products-grid">
+    <div *ngIf="filteredProducts.length === 0" class="no-products">
+      <p>No products found matching your criteria.</p>
+    </div>
+    
+    <div *ngFor="let product of filteredProducts" class="product-card">
+      <div class="product-image">
+        <img [src]="product.primary_image?.image || '/assets/placeholder-product.jpg'" 
+             [alt]="product.name"
+             onerror="this.src='/assets/placeholder-product.jpg'">
+        <div class="product-badge" *ngIf="product.is_organic">Organic</div>
+      </div>
+      
+      <div class="product-info">
+        <h3 class="product-name">{{ product.name }}</h3>
+        <p class="product-description">{{ product.description }}</p>
+        <div class="product-details">
+          <span class="product-category">{{ product.category.name }}</span>
+          <span class="product-location">📍 {{ product.seller.full_name }}</span>
+        </div>
+        
+        <div class="pricing-info">
+          <div class="price-info">
+            <span class="price">KSh {{ product.price }}</span>
+            <span class="unit">per {{ product.unit }}</span>
+          </div>
+          <div class="quantity-info">
+            <span class="available">{{ product.quantity_available }} {{ product.unit }} available</span>
+          </div>
+        </div>
+        
+        <div class="farmer-info">
+          <span class="farmer-name">👨‍🌾 {{ product.seller.full_name }}</span>
+        </div>
+        
+        <div class="product-actions">
+          <button 
+            *ngIf="isLoggedIn()" 
+            (click)="addToCart(product)" 
+            class="btn btn-primary"
+            [disabled]="product.quantity_available <= 0">
+            {{ product.quantity_available > 0 ? 'Add to Cart' : 'Out of Stock' }}
+          </button>
+          <button 
+            *ngIf="!isLoggedIn()" 
+            class="btn btn-outline"
+            onclick="alert('Please login to purchase products')">
+            Login to Buy
+          </button>
+          <button class="btn btn-secondary">View Details</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
