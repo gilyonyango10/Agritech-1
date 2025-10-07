@@ -67,9 +67,7 @@ A comprehensive, production-ready agricultural marketplace that connects farmers
 
 ### Backend Setup
 
-1. **Navigate to backend directory**
-   ```bash
-   cd /home/maytor/Downloads/work/agritech/backend/agritech
+
    ```
 
 2. **Create virtual environment**
@@ -121,8 +119,7 @@ A comprehensive, production-ready agricultural marketplace that connects farmers
 ### Docker Deployment
 
 1. **Build and run with Docker Compose**
-   ```bash
-   cd /home/maytor/Downloads/work/Agritech/agritech
+ 
    docker-compose up --build
    ```
 
